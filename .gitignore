@@ -1,21 +1,2 @@
 .venv/
-__pycache__/
-*.py[cod]
-.ipynb_checkpoints/
-.pytest_cache/
-.mypy_cache/
-.DS_Store
-Thumbs.db
 .vscode/
-.idea/
-
-# Локальные данные и результаты студентов
-data/raw/*
-!data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
-figures/*
-!figures/.gitkeep
-exports/*
-!exports/.gitkeep
-
