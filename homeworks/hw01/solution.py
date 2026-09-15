@@ -1,18 +1,25 @@
 import numpy as np
 import pandas as pd
 from pathlib import Path
+import subprocess
+import sys
 import data_utils
 
 # --- 1. Пути и папки ---
+# Определяем корень репозитория
 ROOT = Path(__file__).resolve().parents[2]
-raw = ROOT / "data/raw/hw01"
-processed = ROOT / "data/processed/hw01"
-exports = ROOT / "exports/hw01"
+hw_dir = ROOT / "homeworks" / "hw01"
+raw = ROOT / "data" / "raw" / "hw01"
+processed = ROOT / "data" / "processed" / "hw01"
+exports = ROOT / "exports" / "hw01"
 
 processed.mkdir(parents=True, exist_ok=True)
 exports.mkdir(parents=True, exist_ok=True)
 
-# --- 2. Чтение ---
+# --- ВО-ПЕРВЫХ: ЗАДЕЙСТВУЕМ ФАЙЛ ПРЕПОДА (4-й файл) ---
+subprocess.run([sys.executable, str(hw_dir / "generate_data.py")])
+
+# --- 2. Чтение данных ---
 wells = data_utils.read_wells(raw / "wells.csv")
 layers = data_utils.read_layers(raw / "layers.xlsx")
 pump = data_utils.read_pumping_test(raw / "pumping_test.txt")
@@ -86,3 +93,40 @@ with open(exports / "results.txt", "w", encoding="utf-8") as f:
 
 assert np.allclose(np.load(processed / "pressure_matrix.npy"), mat)
 assert np.allclose(np.load(processed / "pressure_cube.npz")["pressure_cube"], cube)
+
+# --- ВО-ВТОРЫХ: АВТОМАТИЧЕСКОЕ СОЗДАНИЕ ОТВЕТОВ В ПАПКЕ ---
+answers_content = """Что означает одна строка каждого файла?
+- wells.csv: координаты и результаты измерений для одной скважины.
+- layers.xlsx: физические характеристики одного геологического слоя.
+- pumping_test.txt: замеры давления в определенный момент времени (в часах).
+
+Ответы на вопросы:
+1. Чем DataFrame отличается от массива NumPy?
+DataFrame — это таблица с названиями колонок для разных типов данных. Массив NumPy — это матрица с однородным типом данных для быстрых вычислений.
+
+2. Что означают две величины в shape массива (13, 2)?
+13 — это количество строк, а 2 — количество столбцов.
+
+3. Почему pressure * 1_000_000 не требует цикла for?
+Библиотека Pandas использует векторизованные операции: действие применяется ко всему столбцу сразу.
+
+4. Что выбирает срез array[::2]?
+Он выбирает каждый второй элемент, начиная с самого первого.
+
+5. Что содержится в логической маске?
+Значения True (если условие выполнено) и False (если нет).
+
+6. Зачем после сохранения загружать массив обратно?
+Для проверки: чтобы убедиться, что данные не повредились при сохранении и корректно читаются.
+
+7. Какие файлы являются исходными, а какие создаются программой?
+Исходные: wells.csv, layers.xlsx, pumping_test.txt.
+Создаются: wells_clean.csv, table_summary.xlsx, pressure_matrix.npy, pressure_cube.npz, results.txt (и сам answers.md).
+"""
+
+answers_path = hw_dir / "answers.md"
+with open(answers_path, "w", encoding="utf-8") as f:
+    f.write(answers_content)
+
+print(f"\nФайл с ответами '{answers_path.name}' успешно создан в папке '{hw_dir.name}'!")
+print("Готово! Код успешно дошел до конца.")
