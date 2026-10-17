@@ -70,6 +70,9 @@ margin = 0.1
 y_min = pressure_field.min() - margin
 y_max = pressure_field.max() + margin
 ax.set_ylim(y_min, y_max)
+
+ax.set_xlim(radius_m.min(), radius_m.max())
+
 ax.grid(alpha=0.3)
 
 line, = ax.plot([], [], marker='o', color='steelblue', linewidth=2)
